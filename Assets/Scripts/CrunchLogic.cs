@@ -22,6 +22,7 @@ public class CrunchLogic : MonoBehaviour
     }
     public void crunch()
     {
+        FindObjectOfType<stopwatch>().updateTaskTimeWorked();
         //remove task from todayManager
         FindObjectOfType<TodayManager>().todayTasks.Remove(taskToCrunch);
         //remove task from project and task button from completable buttons list in today manager
@@ -52,6 +53,7 @@ public class CrunchLogic : MonoBehaviour
     public void checkUnfinishedCrunch()
     {
         if(FindObjectOfType<TodayManager>().getIsCrunching()){
+            FindObjectOfType<stopwatch>().updateTaskTimeWorked();
             //set leftover time 
             string stopwatchTime = FindObjectOfType<stopwatch>().getText();
             int t0 = int.Parse(stopwatchTime.Substring(0, 2));

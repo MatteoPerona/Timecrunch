@@ -8,6 +8,7 @@ public class Task
     private string Description;
     private int[] date;
     private int[] time;
+    private float timeWorked;
     public Task(string T, string D, int[] d, int[] t)
     {
         Title = T;
@@ -38,5 +39,13 @@ public class Task
     }
     public void setTime(int[] t){
         time = t;
+    }
+    public void addTime(float f)
+    {
+        timeWorked += f;
+    }
+    public float getTimeWorked()
+    {
+        return timeWorked;
     }
 }

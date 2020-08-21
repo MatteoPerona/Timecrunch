@@ -8,15 +8,15 @@ public class TodayManager : MonoBehaviour
     private string date;
     public TMP_Text title;
     public List<Task> todayTasks = new List<Task>();
-    private List<Task> newTodayTasks = new List<Task>();
+    private List<Task> newTodayTasks = new List<Task>();// clears on update
     public float multiplier = 1/18f;
     public GameObject completableTask;
     public GameObject completableTaskScroll;
     //public GameObject todayCanvas;
     private List<GameObject> completableTasks;
     //private int selectedTaskIndex;
-    private List<int> taskProjectIndices = new List<int>();
-    private List<Project> projects = new List<Project>();
+    private List<int> taskProjectIndices = new List<int>();// clears on update
+    private List<Project> projects = new List<Project>();// clears on update
     public GameObject crunchScreen;
     private GameObject currentButton;
     private GameObject currentCrunchScreen;
@@ -24,6 +24,9 @@ public class TodayManager : MonoBehaviour
     public int selectedScrolElementIndex;
     public GameObject outlyingTask;
     private GameObject currentOutlyingTaskEditor;
+    private float totalTasksToday;
+    private float completedTasksToday;
+    public GameObject progressBar;
     
     void Start()
     {
@@ -43,8 +46,20 @@ public class TodayManager : MonoBehaviour
     public void today()
     {
         date = System.DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yy");
-        title.text = date;
-        
+        // check if title and date match
+        // if they don't it will set the new date and reset all initial data
+        if (title.text != date)
+        {
+            title.text = date;
+            completedTasksToday = 0;
+            totalTasksToday = 0;
+            todayTasks.Clear();
+            foreach (GameObject cTask in completableTasks)
+            {
+                Destroy(cTask);
+            }
+            completableTasks.Clear();
+        }
 
         projects = FindObjectOfType<ProjectViewLogic>().projects;
         for(int x = 0; x < projects.Count; x++){
@@ -85,6 +100,7 @@ public class TodayManager : MonoBehaviour
         }
         foreach(Task t in newTodayTasks){
             todayTasks.Add(t);
+            totalTasksToday += 1f;
         }
         if(todayTasks != null){
             newTodayTasks.Clear();
@@ -94,6 +110,7 @@ public class TodayManager : MonoBehaviour
         }
 
         updateButtons();
+        updateTodayProgress();
     }
     public void addCompletableTask(Task t){
         float h = 0f;
@@ -199,6 +216,7 @@ public class TodayManager : MonoBehaviour
                 Destroy(completableTasks[x]);
                 completableTasks.Remove(completableTasks[x]);
                 todayTasks.Remove(todayTasks[x]);
+                totalTasksToday -= 1;
             }
 
             //Resize button if necessary
@@ -247,5 +265,10 @@ public class TodayManager : MonoBehaviour
     public void removeCompletebleTask(GameObject cTask)
     {
         completableTasks.Remove(cTask);
+        completedTasksToday += 1;
+    }
+    public void updateTodayProgress()
+    {
+        progressBar.GetComponent<Image>().fillAmount = completedTasksToday/totalTasksToday;
     }
 }

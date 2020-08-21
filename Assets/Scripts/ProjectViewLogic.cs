@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,7 +28,7 @@ public class ProjectViewLogic : MonoBehaviour
     private bool isNew;
     private List<GameObject> activeProjectButtons;
     public List<Task> completedOutliers = new List<Task>();
-    public List<Project> completedProjects = new List<Project>();
+    //public List<Project> completedProjects = new List<Project>();
     void Start()
     {
         todayView.SetActive(false);
@@ -40,7 +41,7 @@ public class ProjectViewLogic : MonoBehaviour
     void Update()
     {
         setProjectProgress();
-        Debug.Log(completedOutliers.Count);
+        //Debug.Log(activeProjectButtons.Count);
     }
 
     public void createNewProject()
@@ -60,6 +61,7 @@ public class ProjectViewLogic : MonoBehaviour
         button.onClick.AddListener(delegate{openProjectEditor();});
         activeProjectButtons.Add(button.gameObject);
         Destroy(currentEditor);
+
         //Debug.Log(activeProjectButtons.Count);
     }
     
@@ -105,7 +107,7 @@ public class ProjectViewLogic : MonoBehaviour
             {
                 if (t == p.getTitle())
                 {
-                    Image im = GameObject.Find("Image").GetComponent<Image>();
+                	Image im = ap.GetComponentsInChildren<Image>()[1];
                     TMP_Text utCount = im.GetComponentInChildren<TMP_Text>();
                     utCount.text = p.getProjectTasks().Count.ToString();
                     im.fillAmount = p.getProgress();

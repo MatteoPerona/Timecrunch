@@ -11,8 +11,10 @@ public class stopwatch : MonoBehaviour
     private float time;
     private bool playing;
     private Task taskToCrunch;
+    private float startTime;
     void Start()
     {
+        startTime = Time.time;
         int i = FindObjectOfType<TodayManager>().getSelectedTaskIndex();
         taskToCrunch = FindObjectOfType<TodayManager>().getTodayTasks()[i];
         int index = 0;
@@ -48,6 +50,7 @@ public class stopwatch : MonoBehaviour
     {
         if(playing){
             playing = false;
+            updateTaskTimeWorked();
         }
         else{
             playing = true;
@@ -60,5 +63,30 @@ public class stopwatch : MonoBehaviour
         string minutes = Mathf.Floor((time % 3600) / 60).ToString("00");
         string seconds = (time % 60).ToString("00");
         text.text = hours + ":" + minutes + ":" + seconds;
+    }
+    public void updateTaskTimeWorked()
+    {
+        float now = Time.time;
+        float timeWorked = now-startTime;
+        List<Project> projects = FindObjectOfType<ProjectViewLogic>().projects;
+        bool outlier = true;
+        foreach (Project p in projects)
+        {
+            foreach (Task t in p.getProjectTasks())
+            {
+                if (taskToCrunch == t)
+                {
+                    t.addTime(timeWorked);
+                    outlier = false;
+
+                }
+            }
+        }
+        if (outlier)
+        {
+            int i = FindObjectOfType<TodayManager>().getTodayTasks().indexOf(taskToCrunch);
+            FindObjectOfType<TodayManager>().getTodayTasks()[i].addTime(timeWorked);
+        }
+        startTime = Time.time;
     }
 }
