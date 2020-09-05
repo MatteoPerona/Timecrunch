@@ -84,7 +84,7 @@ public class stopwatch : MonoBehaviour
         }
         if (outlier)
         {
-            int i = FindObjectOfType<TodayManager>().getTodayTasks().indexOf(taskToCrunch);
+            int i = FindObjectOfType<TodayManager>().getTodayTasks().IndexOf(taskToCrunch);
             FindObjectOfType<TodayManager>().getTodayTasks()[i].addTime(timeWorked);
         }
         startTime = Time.time;

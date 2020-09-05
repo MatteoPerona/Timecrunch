@@ -85,6 +85,18 @@ public class ProjectViewLogic : MonoBehaviour
     public void deleteProject()
     {
         if(!isNew){
+            FindObjectOfType<AchievementLogic>().destroyProject(projects[selectedProjectIndex].getTitle());
+            foreach(Task t in projects[selectedProjectIndex].getProjectTasks())
+            {
+                foreach (Task ct in FindObjectOfType<TodayManager>().getTodayTasks())
+                {
+                    if (ct == t)
+                    {
+                        FindObjectOfType<TodayManager>().removeTodayTask(ct);
+                        break;
+                    }
+                }
+            } 
             projects.Remove(projects[selectedProjectIndex]);
             activeProjectButtons.Remove(selectedButton.gameObject);
             Destroy(currentEditor);

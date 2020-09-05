@@ -93,6 +93,14 @@ public class ProjectLogic : MonoBehaviour
     public void deleteTask()
     {
         if(!isNew && !FindObjectOfType<ProjectViewLogic>().getNewStatus()){
+            foreach (Task ct in FindObjectOfType<TodayManager>().getTodayTasks())
+            {
+                if (ct == tasks[selectedTaskIndex])
+                {
+                    FindObjectOfType<TodayManager>().removeTodayTask(ct);
+                    break;
+                }
+            }
             tasks.Remove(tasks[selectedTaskIndex]);
             int index = FindObjectOfType<ProjectViewLogic>().getSelectedProjectIndex();
             List<Task> t = FindObjectOfType<ProjectViewLogic>().projects[index].getProjectTasks();

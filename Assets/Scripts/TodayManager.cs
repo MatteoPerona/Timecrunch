@@ -27,9 +27,13 @@ public class TodayManager : MonoBehaviour
     private float totalTasksToday;
     private float completedTasksToday;
     public GameObject progressBar;
+    private List<Task> completedToday = new List<Task>();
+    public GameObject todayCanvas;
+    private bool refreshed;
     
     void Start()
     {
+        refreshed = false;
         isCrunching = false;
         if(completableTasks == null){
             completableTasks = new List<GameObject>();
@@ -38,9 +42,14 @@ public class TodayManager : MonoBehaviour
     }
     void Update()
     {
-        if (!isCrunching)
+        if (!isCrunching && todayCanvas.activeSelf && !refreshed)
         {
             today();
+            refreshed = true;
+        }
+        else if (refreshed && !todayCanvas.activeSelf)
+        {
+            refreshed = false;
         }
     }
     public void today()
@@ -51,9 +60,10 @@ public class TodayManager : MonoBehaviour
         if (title.text != date)
         {
             title.text = date;
-            completedTasksToday = 0;
-            totalTasksToday = 0;
+            completedTasksToday = 0f;
+            totalTasksToday = 0f;
             todayTasks.Clear();
+            completedToday.Clear();
             foreach (GameObject cTask in completableTasks)
             {
                 Destroy(cTask);
@@ -134,10 +144,17 @@ public class TodayManager : MonoBehaviour
         float w = rt.rect.width;
         rt.sizeDelta = new Vector2(w, h);
         nct.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text = t.getTitle();
+        nct.GetComponentInChildren<Button>().onClick.AddListener(delegate{
+                if (isCrunching)
+                {
+                    FindObjectOfType<CrunchLogic>().checkUnfinishedCrunch();
+                }
+            });
         nct.GetComponentInChildren<Button>().onClick.AddListener(delegate{currentButton = nct;});
         nct.GetComponentInChildren<Button>().onClick.AddListener(delegate{openCrunchScreen();});
         completableTasks.Add(nct);
-    } 
+    }
+
     public int getSelectedTaskIndex()
     {
         int index = 0;
@@ -150,37 +167,56 @@ public class TodayManager : MonoBehaviour
         }
         return index;
     }
+
     public List<Task> getTodayTasks()
     {
         return todayTasks;
     }
+
     public GameObject getCurrentButton(){
         return currentButton;
     }
+
     public void setIsCrunching(bool isIt){
         isCrunching = isIt;
     }
+
     public bool getIsCrunching()
     {
         return isCrunching;
     }
+
     public void openCrunchScreen()
     {
-        if(!isCrunching)
+        //Debug.Log(currentButton.GetComponentInChildren<TMP_Text>().text);
+        if(isCrunching==false)
         {
             isCrunching = true;
             int buttonScrollIndex = 0;
             Button[] buttons = completableTaskScroll.GetComponentsInChildren<Button>();
-            for(int x = 0; x < buttons.Length; x++){
-                if(buttons[x].GetComponentInChildren<TMP_Text>().text == currentButton.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text){
-                    buttonScrollIndex = x;
-                    selectedScrolElementIndex = buttonScrollIndex;
-                    break;
+            //Debug.Log("buttons: "+buttons.Length);
+            for (int x = 0; x < buttons.Length; x++)
+            {
+                try
+                {
+                    //Debug.Log("button title: "+buttons[x].GetComponentInChildren<TMP_Text>().text);
+                    if (buttons[x].GetComponentInChildren<TMP_Text>().text == currentButton.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text)
+                    {
+                        buttonScrollIndex = x;
+                        selectedScrolElementIndex = buttonScrollIndex;
+                        break;
+                    }
+                }
+                catch
+                {
+                    continue;
                 }
             }
-            foreach(GameObject cTask in completableTasks){
+            foreach(GameObject cTask in completableTasks)
+            {
                 //Debug.Log(cTask.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text+" "+buttons[buttonScrollIndex].GetComponentInChildren<TMP_Text>().text);
-                if(cTask.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text == buttons[buttonScrollIndex].GetComponentInChildren<TMP_Text>().text){
+                if(cTask.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text == buttons[buttonScrollIndex].GetComponentInChildren<TMP_Text>().text)
+                {
                     cTask.SetActive(false);
                     break;
                 }
@@ -190,7 +226,12 @@ public class TodayManager : MonoBehaviour
             newCrunch.transform.SetSiblingIndex(buttonScrollIndex);
             currentCrunchScreen = newCrunch;
         }
+        else{
+            FindObjectOfType<CrunchLogic>().checkUnfinishedCrunch();
+            //openCrunchScreen();
+        }
     }
+
     public GameObject getCurrentCrunchScreen()
     {
         return currentCrunchScreen;
@@ -261,6 +302,7 @@ public class TodayManager : MonoBehaviour
     {
         addCompletableTask(t);
         todayTasks.Add(t);
+        totalTasksToday += 1;
     }
     public void removeCompletebleTask(GameObject cTask)
     {
@@ -270,5 +312,27 @@ public class TodayManager : MonoBehaviour
     public void updateTodayProgress()
     {
         progressBar.GetComponent<Image>().fillAmount = completedTasksToday/totalTasksToday;
+    }
+    public void addCompletedToday(Task t)
+    {
+        completedToday.Add(t);
+    }
+    public void removeCompletedToday(Task t)
+    {
+        completedToday.Remove(t);
+        completedTasksToday -= 1;
+        totalTasksToday -= 1;
+    }
+    public List<Task> getCompletedToday()
+    {
+        return completedToday;
+    }
+    public void removeTodayTask(Task t)
+    {
+        int index = todayTasks.IndexOf(t);
+        todayTasks.Remove(t);
+        totalTasksToday -= 1;
+        Destroy(completableTasks[index]);
+        completableTasks.Remove(completableTasks[index]);
     }
 }

@@ -24,6 +24,7 @@ public class CrunchLogic : MonoBehaviour
     {
         FindObjectOfType<stopwatch>().updateTaskTimeWorked();
         //remove task from todayManager
+        FindObjectOfType<TodayManager>().addCompletedToday(taskToCrunch);
         FindObjectOfType<TodayManager>().todayTasks.Remove(taskToCrunch);
         //remove task from project and task button from completable buttons list in today manager
         bool outlier = true;

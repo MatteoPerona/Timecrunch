@@ -46,6 +46,10 @@ public class Project
     {
         return completedTasks;
     }
+    public void setCompletedTasks(List<Task> ctList)
+    {
+         completedTasks = ctList;
+    }
     public float getProgress()
     {
         float count_incomplete = tasks.Count;
