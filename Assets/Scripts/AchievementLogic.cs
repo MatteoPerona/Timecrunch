@@ -10,14 +10,13 @@ public class AchievementLogic : MonoBehaviour
     public GameObject scroll;
     public GameObject experienceBar;
     public GameObject projectViewer;
+    public TMP_Text timeWorkedToday;
     public Button projectBtn;
-    private float level;
-    private float exp;
     public TMP_Text playerName;
-    private float experience;
-    private float totalTimeWorked;
-    private float timeWorkedToday;
+    public TMP_Text level;
+    public UserData user;
     private List<Project> achievementProjects = new List<Project>();
+    private List<Task> allCompletedTasks = new List<Task>();
     private List<GameObject> activeProjectButtons;
     private int selectedProjectIndex;
     private Button selectedButton;
@@ -26,6 +25,8 @@ public class AchievementLogic : MonoBehaviour
 
     void Start()
     {
+        user = new UserData("Name Here");
+        calculateLevel();
     	if (activeProjectButtons == null)
     	{
     		activeProjectButtons = new List<GameObject>();
@@ -52,9 +53,9 @@ public class AchievementLogic : MonoBehaviour
 
     public void updateProjectButtons()
     {
+        int oldInds = achievementProjects.Count;
         achievementProjects = FindObjectOfType<ProjectViewLogic>().projects;
-        int newInds = achievementProjects.Count-activeProjectButtons.Count;
-        Debug.Log("New Inds Count for ACHIEVEMENTS: "+newInds);
+        int newInds = achievementProjects.Count-oldInds;
         if (newInds > 0)
         {
             for (int i = 0; i < newInds; i++)
@@ -62,7 +63,41 @@ public class AchievementLogic : MonoBehaviour
                 addProjectButton(achievementProjects[activeProjectButtons.Count+i]);
             }
         }
+
+        foreach (Project p in achievementProjects)
+        {
+            foreach (Task t in p.getCompletedTasks())
+            {
+                bool isNew = true;
+                foreach (Task ct in allCompletedTasks)
+                {
+                    if (t == ct)
+                    {
+                        isNew = false;
+                        break;
+                    }
+                }
+                if (isNew)
+                {
+                    allCompletedTasks.Add(t);
+                    user.rewardTaskCompletion(t);
+                    calculateLevel();
+                }
+            }
+        }
     }
+
+    public void calculateLevel()
+    {
+        float limit = user.getLevel()*3600f;
+        experienceBar.GetComponent<Image>().fillAmount = user.getExp()/limit;
+        if (user.getTimeWorkedToday() > 0)
+        {
+            timeWorkedToday.text = user.getTimeWorkedToday().ToString();
+        }
+        level.text = user.getLevel().ToString();
+    }
+
     public void addProjectButton(Project project)
     {
         Button button = Instantiate(projectBtn, transform.position, transform.rotation);
@@ -84,18 +119,15 @@ public class AchievementLogic : MonoBehaviour
         return selectedProjectIndex;
     }
 
-    public void updateTotalTimeWorked()
-    {
-    	//itterate through all projects and tasks within to calculate total time worked
-    }
-
     public void destroyProject(string t)
     {
-        foreach (Button b in scroll.GetComponentsInChildren<Button>())
+        foreach (GameObject b in activeProjectButtons)
         {
             if (b.GetComponentInChildren<Text>().text == t)
             {
-                Destroy(b.gameObject);
+                activeProjectButtons.Remove(b);
+                Destroy(b);
+                break;
             }
         }
     }

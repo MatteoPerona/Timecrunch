@@ -58,7 +58,7 @@ MonoBehaviour:
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
-  m_ChildControlHeight: 1
+  m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -738,7 +738,6 @@ MonoBehaviour:
   description: {fileID: 8008136333019847807}
   scroll: {fileID: 1953457965839653081}
   canvas: {fileID: 7769272726122770147}
-  popUp: {fileID: 3367283462750303622, guid: 7e1b273ca7d4a4645a7058630c9b4dae, type: 3}
 --- !u!1 &7769272726122770147
 GameObject:
   m_ObjectHideFlags: 0

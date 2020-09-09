@@ -2,15 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PopLogic : MonoBehaviour
 {
+    public TMP_Text title;
     public Button yes;
     public Button no;
+    private string ogTitle;
+    public float animTime = 0.1f;
 
     // Start is called before the first frame update
     void Start()
     {
+        ogTitle = title.text;
+        gameObject.GetComponent<Button>().onClick.AddListener(delegate{
+            activatePopUp();
+        });
         yes.onClick.AddListener(delegate{
             //removal from project
             Task t = FindObjectOfType<ViewerLogic>().getCurrentTask();
@@ -32,15 +40,51 @@ public class PopLogic : MonoBehaviour
             }
             //buttons removal
             FindObjectOfType<ViewerLogic>().removeCompletedTask(t);
-            LeanTween.scale(gameObject, Vector3.zero, .5f).setEaseOutBack().setOnComplete(destroyMe);
+            gameObject.LeanScale(Vector3.zero, animTime).setOnComplete(destroyMe);
         });
 
         no.onClick.AddListener(delegate{
-            FindObjectOfType<ViewerLogic>().getCurrentButton().gameObject.SetActive(true);
-            LeanTween.scale(gameObject, Vector3.zero, .5f).setEaseOutBack().setOnComplete(destroyMe);
+            closePopUp();
         });
+        yes.gameObject.SetActive(false);
+        no.gameObject.SetActive(false);
     }
 
+    void activatePopUp()
+    {
+        gameObject.GetComponent<Button>().onClick.RemoveAllListeners();
+        LeanTween.size(gameObject.GetComponent<RectTransform>(), gameObject.GetComponent<RectTransform>().sizeDelta* new Vector2(1f, 1.3f), animTime).setEaseInCubic();
+        LeanTween.alphaText(title.rectTransform, 0f, animTime);
+        changeText();
+        yes.gameObject.SetActive(true);
+        no.gameObject.SetActive(true);
+    }
+    void changeText()
+    {
+        if (title.text == ogTitle)
+        {
+            title.text = "Re-Activate?";
+            LeanTween.moveLocalY(title.gameObject, title.transform.localPosition.y+75f, animTime);
+            LeanTween.alphaText(title.rectTransform, 1f, animTime);
+        }
+        else
+        {
+            LeanTween.moveLocalY(title.gameObject, title.transform.localPosition.y-75f, animTime);
+            title.text = ogTitle;
+            LeanTween.alphaText(title.rectTransform, 1f, animTime);
+        }
+    }
+    void closePopUp()
+    {
+        yes.gameObject.SetActive(false);
+        no.gameObject.SetActive(false);
+        LeanTween.alphaText(title.rectTransform, 0f, animTime);
+        changeText();
+        LeanTween.size(gameObject.GetComponent<RectTransform>(), gameObject.GetComponent<RectTransform>().sizeDelta* new Vector2(1f, .76923f), animTime).setEaseInCubic();
+        gameObject.GetComponent<Button>().onClick.AddListener(delegate{
+            activatePopUp();
+        });
+    }
     void destroyMe()
     {
         Destroy(gameObject);

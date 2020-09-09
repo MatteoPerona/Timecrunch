@@ -79,7 +79,7 @@ public class TodayManager : MonoBehaviour
                 Task t = pTasks[j];
                 bool exists = false;
                 foreach(Task tT in todayTasks){
-                    if(tT.getTitle() == t.getTitle()){
+                    if(tT == t){
                         exists = true;
                         break;
                     }
@@ -153,6 +153,7 @@ public class TodayManager : MonoBehaviour
         nct.GetComponentInChildren<Button>().onClick.AddListener(delegate{currentButton = nct;});
         nct.GetComponentInChildren<Button>().onClick.AddListener(delegate{openCrunchScreen();});
         completableTasks.Add(nct);
+        updateTodayProgress();
     }
 
     public int getSelectedTaskIndex()
@@ -281,6 +282,7 @@ public class TodayManager : MonoBehaviour
             rt.sizeDelta = new Vector2(w, h);
 
             completableTasks[x].GetComponentInChildren<TMP_Text>().text = todayTasks[x].getTitle();
+            updateTodayProgress();
         }
     }
     public void newOutlyingTask()
@@ -303,11 +305,13 @@ public class TodayManager : MonoBehaviour
         addCompletableTask(t);
         todayTasks.Add(t);
         totalTasksToday += 1;
+        updateTodayProgress();
     }
     public void removeCompletebleTask(GameObject cTask)
     {
         completableTasks.Remove(cTask);
         completedTasksToday += 1;
+        updateTodayProgress();
     }
     public void updateTodayProgress()
     {
@@ -334,5 +338,6 @@ public class TodayManager : MonoBehaviour
         totalTasksToday -= 1;
         Destroy(completableTasks[index]);
         completableTasks.Remove(completableTasks[index]);
+        updateTodayProgress();
     }
 }

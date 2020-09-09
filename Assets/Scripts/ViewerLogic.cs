@@ -12,13 +12,11 @@ public class ViewerLogic : MonoBehaviour
     public TMP_Text description;
     public GameObject scroll;
     public GameObject canvas;
-    public GameObject popUp;
     private List<Project> pList = new List<Project>();
     private Project currentProject;
     private List<Task> tList = new List<Task>();
     private Task currentTask;
-    private Button currentButton;
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,23 +32,11 @@ public class ViewerLogic : MonoBehaviour
             b.GetComponentInChildren<TMP_Text>().text = t.getTitle();
             b.onClick.AddListener(delegate{
                 currentTask = t;
-                currentButton = b;
-                activatePopUp();
-                b.gameObject.SetActive(false);
             });
         }
         doneButton.onClick.AddListener(delegate{destroyMe();});
     }
 
-    void activatePopUp()
-    {
-        //ask give the user a choice to set the task as active again
-        GameObject newPop = Instantiate(popUp, transform.position, transform.rotation);
-        newPop.transform.SetParent(scroll.transform);
-        //LeanTween.scale(newPop, Vector3.zero, 0f);
-        LeanTween.scale(newPop, new Vector3(1f, 1f, 1f), .5f).setEasePunch();
-        
-    }
     void destroyMe()
     {
         Destroy(gameObject);
@@ -60,10 +46,7 @@ public class ViewerLogic : MonoBehaviour
     {
         return currentTask;
     }
-    public Button getCurrentButton()
-    {
-        return currentButton;
-    }
+
     public void removeCompletedTask(Task t)
     {
         tList.Remove(t);

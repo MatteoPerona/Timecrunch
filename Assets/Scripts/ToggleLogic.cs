@@ -20,9 +20,26 @@ public class ToggleLogic : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        initial();
+        projectToggle.GetComponent<Button>().onClick.AddListener(delegate{
+            projectsCanvas.SetActive(true);
+            todayCanvas.SetActive(false);
+            achievementsCanvas.SetActive(false);
+        });
+        
+        achievementsToggle.GetComponent<Button>().onClick.AddListener(delegate{
+            projectsCanvas.SetActive(false);
+            todayCanvas.SetActive(false);
+            achievementsCanvas.SetActive(true);
+        });
+
+        todayToggle.GetComponent<Button>().onClick.AddListener(delegate{
+            projectsCanvas.SetActive(false);
+            todayCanvas.SetActive(true);
+            achievementsCanvas.SetActive(false);
+        });
     }
 
+    /*
     void initial()
     {
         if (projectsCanvas.activeSelf)
@@ -75,7 +92,7 @@ public class ToggleLogic : MonoBehaviour
         }
     }
 
-    /*
+    
     void initial()
     {
         if (projectsCanvas.activeSelf == true)

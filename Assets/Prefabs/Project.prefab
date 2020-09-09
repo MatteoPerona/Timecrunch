@@ -876,7 +876,7 @@ MonoBehaviour:
   taskObject: {fileID: 5194809959126055983, guid: 92e3e508f4fc71a4998b5727b4170be3, type: 3}
   taskEditorObject: {fileID: 656690444533487971, guid: 36f7393dfd89c2b4aaf9d5d64a41eaf1, type: 3}
   delete: {fileID: 0}
-  taskButton: {fileID: 8409921418401926671, guid: fe51fd8186fc01246b5eb3fed1b91818, type: 3}
+  taskButton: {fileID: 8409921418401926671, guid: d8d775bb0bcab0140b1519d5ff3c9553, type: 3}
   deleteButton: {fileID: 4416401693612780400}
 --- !u!1 &5202039554766616524
 GameObject:

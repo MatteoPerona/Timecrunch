@@ -58,4 +58,14 @@ public class Project
         float progress = count_completed/total;
         return progress;
     }
+
+    public float getTimeWorked()
+    {
+        float total = 0; 
+        foreach (Task t in completedTasks)
+        {
+            total += t.getTimeWorked();
+        }
+        return total;
+    }
 }
