@@ -44,7 +44,7 @@ public class VerticalDragHandler : MonoBehaviour, IDragHandler, IBeginDragHandle
     {
         currentDragger.transform.position = eventData.position;
         Button[] children = content.GetComponentsInChildren<Button>();
-        Debug.Log(children.Length+" children");
+        //Debug.Log(children.Length+" children");
 
         if (siblingIndex < children.Length-1 && children[siblingIndex+1].transform.position.y > eventData.position.y)//down
         {

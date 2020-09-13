@@ -42,6 +42,10 @@ public class UserData
     {
         return timeWorkedToday;
     }
+    public void setTimeWorkedToday(float f)
+    {
+        timeWorkedToday = f;
+    }
     public float getTimeWorked()
     {
         return timeWorked;
@@ -54,6 +58,7 @@ public class UserData
         exp += reward;
 
         timeWorked += t.getTimeWorked();
+        timeWorkedToday += t.getTimeWorked();
         checkLevelUp();
     }
 

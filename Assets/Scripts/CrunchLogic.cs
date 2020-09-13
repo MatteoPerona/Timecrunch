@@ -72,7 +72,9 @@ public class CrunchLogic : MonoBehaviour
             //int scrollIndex = FindObjectOfType<TodayManager>().selectedScrolElementIndex;
             //LeanTween.scaleY(FindObjectOfType<TodayManager>().getCurrentCrunchScreen(), 0f, .1f).setOnComplete(destroyScreen);
             destroyScreen();
+            FindObjectOfType<TodayManager>().updateButtons();
             FindObjectOfType<TodayManager>().setIsCrunching(false);
+            
         }
     }
     void destroyScreen()

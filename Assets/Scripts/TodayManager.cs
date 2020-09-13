@@ -69,6 +69,7 @@ public class TodayManager : MonoBehaviour
                 Destroy(cTask);
             }
             completableTasks.Clear();
+            FindObjectOfType<AchievementLogic>().user.setTimeWorkedToday(0f);
         }
 
         projects = FindObjectOfType<ProjectViewLogic>().projects;

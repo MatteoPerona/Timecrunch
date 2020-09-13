@@ -11,6 +11,7 @@ public class AchievementLogic : MonoBehaviour
     public GameObject experienceBar;
     public GameObject projectViewer;
     public TMP_Text timeWorkedToday;
+    public Button twtDescript;
     public Button projectBtn;
     public TMP_Text playerName;
     public TMP_Text level;
@@ -31,6 +32,9 @@ public class AchievementLogic : MonoBehaviour
     	{
     		activeProjectButtons = new List<GameObject>();
     	}
+        twtDescript.onClick.AddListener(delegate{
+            describeTimeWorkedToday();
+        });
     }
 
     void Update()
@@ -85,6 +89,7 @@ public class AchievementLogic : MonoBehaviour
                 }
             }
         }
+        updateTimeWorkedToday();
     }
 
     public void calculateLevel()
@@ -95,7 +100,7 @@ public class AchievementLogic : MonoBehaviour
         {
             timeWorkedToday.text = user.getTimeWorkedToday().ToString();
         }
-        level.text = user.getLevel().ToString();
+        level.text = "Lv. " + user.getLevel().ToString();
     }
 
     public void addProjectButton(Project project)
@@ -129,6 +134,27 @@ public class AchievementLogic : MonoBehaviour
                 Destroy(b);
                 break;
             }
+        }
+    }
+
+    public void updateTimeWorkedToday()
+    {
+        float time = user.getTimeWorkedToday();
+        string hours = Mathf.Floor((time % 216000) / 3600).ToString("00");
+        string minutes = Mathf.Floor((time % 3600) / 60).ToString("00");
+        string seconds = (time % 60).ToString("00");
+        timeWorkedToday.text = hours + ":" + minutes + ":" + seconds;
+    }
+
+    public void describeTimeWorkedToday()
+    {
+        if (timeWorkedToday.text != "Time Worked Today")
+        {
+            timeWorkedToday.text = "Time Worked Today";
+        }
+        else
+        {
+            updateTimeWorkedToday();
         }
     }
 }
