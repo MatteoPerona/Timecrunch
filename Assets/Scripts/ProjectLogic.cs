@@ -117,4 +117,9 @@ public class ProjectLogic : MonoBehaviour
             Destroy(currentTaskEditor);
         }
     }
+
+    public bool getIsNew()
+    {
+        return isNew;
+    }
 }

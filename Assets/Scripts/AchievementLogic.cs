@@ -23,9 +23,11 @@ public class AchievementLogic : MonoBehaviour
     private Button selectedButton;
     private bool updated = false;
     private GameObject currentViewer;
+    private int oldInds;
 
     void Start()
     {
+        oldInds = 0;
         user = new UserData("Name Here");
         calculateLevel();
     	if (activeProjectButtons == null)
@@ -57,14 +59,16 @@ public class AchievementLogic : MonoBehaviour
 
     public void updateProjectButtons()
     {
-        int oldInds = achievementProjects.Count;
+        Debug.Log("oldInds: "+oldInds);
         achievementProjects = FindObjectOfType<ProjectViewLogic>().projects;
+        Debug.Log("achievementProjectsCount: "+achievementProjects.Count);
         int newInds = achievementProjects.Count-oldInds;
+        Debug.Log("newInds: "+newInds);
         if (newInds > 0)
         {
             for (int i = 0; i < newInds; i++)
             {
-                addProjectButton(achievementProjects[activeProjectButtons.Count+i]);
+                addProjectButton(achievementProjects[oldInds+i]);
             }
         }
 
@@ -90,6 +94,7 @@ public class AchievementLogic : MonoBehaviour
             }
         }
         updateTimeWorkedToday();
+        oldInds += newInds;
     }
 
     public void calculateLevel()

@@ -15,6 +15,9 @@ public class stopwatch : MonoBehaviour
     private bool playing;
     private Task taskToCrunch;
     private float startTime;
+    private bool paused;
+    private System.DateTime timePaused;
+    private float pauseDiff;
     void Start()
     {
         pausePlayIms = pausePlayBtn.gameObject.GetComponentsInChildren<Image>();
@@ -50,6 +53,29 @@ public class stopwatch : MonoBehaviour
             text.text = hours + ":" + minutes + ":" + seconds;
         }
     }
+
+    void OnApplicationPause(bool pauseStatus)
+    {
+        paused = pauseStatus;
+        if (paused && playing)
+        {
+            timePaused = System.DateTime.Now;
+        }
+        else if (!paused && playing)
+        {
+            float s = (float)System.DateTime.Now.Second-timePaused.Second;
+            float m = (float)System.DateTime.Now.Minute*60-timePaused.Minute*60;
+            float h = (float)System.DateTime.Now.Hour*60*60-timePaused.Hour*60*60;
+            float totalDiff = s+m+h;
+            pauseDiff += totalDiff;
+            time -= totalDiff;
+            string hours = Mathf.Floor((time % 216000) / 3600).ToString("00");
+            string minutes = Mathf.Floor((time % 3600) / 60).ToString("00");
+            string seconds = (time % 60).ToString("00");
+            text.text = hours + ":" + minutes + ":" + seconds;
+        }
+    }
+
     public string getText()
     {
         return text.text;
@@ -65,6 +91,7 @@ public class stopwatch : MonoBehaviour
         }
         else{
             playing = true;
+            startTime = Time.time;
             pausePlayIms[0].gameObject.SetActive(false);
             pausePlayIms[1].gameObject.SetActive(true);
             pausePlayBtn.targetGraphic = pausePlayIms[1];
@@ -86,7 +113,8 @@ public class stopwatch : MonoBehaviour
     public void updateTaskTimeWorked()
     {
         float now = Time.time;
-        float timeWorked = now-startTime;
+        float timeWorked = now-startTime+pauseDiff;
+        pauseDiff = 0f;
         Debug.Log("time worked: "+timeWorked);
         List<Project> projects = FindObjectOfType<ProjectViewLogic>().projects;
         bool outlier = true;
@@ -107,6 +135,5 @@ public class stopwatch : MonoBehaviour
             int i = FindObjectOfType<TodayManager>().getTodayTasks().IndexOf(taskToCrunch);
             FindObjectOfType<TodayManager>().getTodayTasks()[i].addTime(timeWorked);
         }
-        startTime = Time.time;
     }
 }
