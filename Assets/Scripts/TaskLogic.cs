@@ -11,7 +11,8 @@ public class TaskLogic : MonoBehaviour
     public TMP_InputField day;
     public TMP_InputField month;
     public TMP_InputField year;
-    public TMP_InputField timeEstimate;
+    public TMP_InputField hours;
+    public TMP_InputField minutes;
     public Button deleteButton;
 
     void Start()
@@ -32,8 +33,9 @@ public class TaskLogic : MonoBehaviour
         string d1 = month.text;
         string d2 = year.text;
         int[] d = new int[]{int.Parse(d0), int.Parse(d1), int.Parse(d2)};
-        string tEstim = timeEstimate.text;
-        int[] t = new int[]{int.Parse(tEstim.Substring(0,2)), int.Parse(tEstim.Substring(3))};
+        string h = hours.text;
+        string m = minutes.text;
+        int[] t = new int[]{int.Parse(h), int.Parse(m)};
         Task task = new Task(T, D, d, t);
         FindObjectOfType<ProjectLogic>().addTask(task);
     }
@@ -44,8 +46,9 @@ public class TaskLogic : MonoBehaviour
         string d1 = month.text;
         string d2 = year.text;
         int[] d = new int[]{int.Parse(d0), int.Parse(d1), int.Parse(d2)};
-        string tEstim = timeEstimate.text;
-        int[] t = new int[]{int.Parse(tEstim.Substring(0,2)), int.Parse(tEstim.Substring(3))};
+        string h = hours.text;
+        string m = minutes.text;
+        int[] t = new int[]{int.Parse(h), int.Parse(m)};
         int index = FindObjectOfType<ProjectLogic>().getSelectedTaskIndex();
         FindObjectOfType<ProjectLogic>().tasks[index].setTitle(T);
         FindObjectOfType<ProjectLogic>().tasks[index].setDescription(D);
