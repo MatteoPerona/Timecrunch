@@ -6,6 +6,7 @@ using TMPro;
 public class TodayManager : MonoBehaviour
 {
     private string date;
+    private string dateToday;
     public TMP_Text title;
     public List<Task> todayTasks = new List<Task>();
     private List<Task> newTodayTasks = new List<Task>();// clears on update
@@ -30,6 +31,12 @@ public class TodayManager : MonoBehaviour
     private List<Task> completedToday = new List<Task>();
     public GameObject todayCanvas;
     private bool refreshed;
+    public System.DateTime dateNow;
+    public GameObject backArrow;
+    public GameObject forwardArrow;
+    private bool newDayProtocol = false;
+    public GameObject newOutlierBtn;
+    
     
     void Start()
     {
@@ -38,6 +45,7 @@ public class TodayManager : MonoBehaviour
         if(completableTasks == null){
             completableTasks = new List<GameObject>();
         }
+        resetDate();
         today();
     }
     void Update()
@@ -54,10 +62,10 @@ public class TodayManager : MonoBehaviour
     }
     public void today()
     {
-        date = System.DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yy");
+        
         // check if title and date match
         // if they don't it will set the new date and reset all initial data
-        if (title.text != date)
+        if (newDayProtocol)
         {
             title.text = date;
             completedTasksToday = 0f;
@@ -70,6 +78,17 @@ public class TodayManager : MonoBehaviour
             }
             completableTasks.Clear();
             FindObjectOfType<AchievementLogic>().user.setTimeWorkedToday(0f);
+            newDayProtocol = false;
+        }
+        else if (title.text != date)
+        {
+            title.text = date;
+            todayTasks.Clear();
+            foreach (GameObject cTask in completableTasks)
+            {
+                Destroy(cTask);
+            }
+            completableTasks.Clear();
         }
 
         projects = FindObjectOfType<ProjectViewLogic>().projects;
@@ -138,12 +157,17 @@ public class TodayManager : MonoBehaviour
             }
             index++;
         }
+        if (h < 3600)
+        {
+            h = 3600;
+        }
         h *= multiplier;
         GameObject nct = Instantiate(completableTask, transform.position, transform.rotation) as GameObject;
         nct.transform.SetParent(completableTaskScroll.transform);
         RectTransform rt = (RectTransform)nct.transform;
         float w = rt.rect.width;
         rt.sizeDelta = new Vector2(w, h);
+        nct.GetComponentInChildren<CompletableTaskObjectLogic>().setTask(t);
         nct.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text = t.getTitle();
         nct.GetComponentInChildren<Button>().onClick.AddListener(delegate{
                 if (isCrunching)
@@ -240,10 +264,12 @@ public class TodayManager : MonoBehaviour
     }
 
     public void updateButtons(){
+        newOutlierBtn.transform.SetAsLastSibling();
+
         for(int x = 0; x < todayTasks.Count; x++){
             //Check if date is still a match
             string day = todayTasks[x].getDate()[0].ToString();
-            string month = todayTasks[x].getDate()[1].ToString();
+            string month  = todayTasks[x].getDate()[1].ToString();
             string year = todayTasks[x].getDate()[2].ToString();
             if(day.Length < 2){
                 day = "0"+day;
@@ -277,6 +303,10 @@ public class TodayManager : MonoBehaviour
                 }
                 index++;
             }
+            if (h < 3600)
+            {
+                h = 3600;
+            }
             h *= multiplier;
             RectTransform rt = (RectTransform)completableTasks[x].transform;
             float w = rt.rect.width;
@@ -307,6 +337,7 @@ public class TodayManager : MonoBehaviour
         todayTasks.Add(t);
         totalTasksToday += 1;
         updateTodayProgress();
+        newOutlierBtn.transform.SetAsLastSibling();
     }
     public void removeCompletebleTask(GameObject cTask)
     {
@@ -340,5 +371,51 @@ public class TodayManager : MonoBehaviour
         Destroy(completableTasks[index]);
         completableTasks.Remove(completableTasks[index]);
         updateTodayProgress();
+    }
+
+    public void forwardDate()
+    {
+        if (date == "Past Due")
+        {
+            resetDate();
+            today();
+        }
+        else
+        {
+            dateNow = dateNow.AddDays(1);
+            date = dateNow.ToString("dd/MM/yy");
+            today();
+        } 
+    }
+
+    public void backDate()
+    {
+        if (dateNow.ToString("dd/MM/yy") == System.DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yy"))
+        {
+            date = "Past Due";
+            backArrow.SetActive(false);
+            today();
+        }
+        else
+        {
+            dateNow = dateNow.AddDays(-1);
+            date = dateNow.ToString("dd/MM/yy");
+            today();
+        }
+        if (backArrow.activeSelf == false)
+        {
+            backArrow.SetActive(true);
+        }
+    }
+
+    public void resetDate()
+    {
+        dateNow = System.DateTime.UtcNow.ToLocalTime();
+        date = dateNow.ToString("dd/MM/yy");
+        if (date != dateToday)
+        {
+            newDayProtocol = true;
+            dateToday = date;
+        }
     }
 }

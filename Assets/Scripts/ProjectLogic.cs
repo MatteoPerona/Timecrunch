@@ -78,8 +78,8 @@ public class ProjectLogic : MonoBehaviour
         TMP_Dropdown[] dropdowns = taskEditor.GetComponentsInChildren<TMP_Dropdown>();
         inputFields[0].text = t.getTitle();
         inputFields[1].text = t.getDescription();
-        inputFields[2].text = t.getTime()[0].ToString();
-        inputFields[3].text = t.getTime()[1].ToString();
+        inputFields[2].text = t.getTime()[0].ToString("00");
+        inputFields[3].text = t.getTime()[1].ToString("00");
         inputFields[4].text = t.getDate()[0].ToString();
         inputFields[5].text = t.getDate()[1].ToString();
         inputFields[6].text = t.getDate()[2].ToString();

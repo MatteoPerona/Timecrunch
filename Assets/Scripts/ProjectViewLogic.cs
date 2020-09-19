@@ -28,7 +28,8 @@ public class ProjectViewLogic : MonoBehaviour
     private bool isNew;
     private List<GameObject> activeProjectButtons;
     public List<Task> completedOutliers = new List<Task>();
-    //public List<Project> completedProjects = new List<Project>();
+    private Project miscTasks;
+
     void Start()
     {
         todayView.SetActive(false);
@@ -37,6 +38,8 @@ public class ProjectViewLogic : MonoBehaviour
         {
             activeProjectButtons = new List<GameObject>();
         }
+        miscTasks = new Project("Misc. Tasks", "This project contains miscelanious tasks created in the today view", new List<Task>());
+        addProject(miscTasks);
     }
     void Update()
     {

@@ -48,4 +48,12 @@ public class Task
     {
         return timeWorked;
     }
+    public void addDay()
+    {
+        date[0] += 1;
+    }
+    public void subtractDay()
+    {
+        date[0] -= 1;
+    }
 }

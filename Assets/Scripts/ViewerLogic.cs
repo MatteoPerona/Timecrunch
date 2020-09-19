@@ -20,7 +20,7 @@ public class ViewerLogic : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        pList = FindObjectOfType<ProjectViewLogic>().projects;
+        pList = FindObjectOfType<AchievementLogic>().achievementProjects;
         currentProject = pList[FindObjectOfType<AchievementLogic>().getProjectIndex()];
         title.text = currentProject.getTitle();
         description.text = currentProject.getDescription();

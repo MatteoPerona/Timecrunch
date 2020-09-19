@@ -24,7 +24,7 @@ public class TaskLogic : MonoBehaviour
             day.text = defaultDate[0].ToString();
             month.text = defaultDate[1].ToString();
             year.text = defaultDate[2].ToString();
-        }  
+        }
     }
     public void saveTaskAs(){
         string T = title.text;

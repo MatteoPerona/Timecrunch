@@ -20,6 +20,9 @@ public class OutlyingTaskLogic : MonoBehaviour
         int[] t = new int[]{int.Parse(t0), int.Parse(t1)};
         int[] d = FindObjectOfType<TodayManager>().getDate();
         newOutlier = new Task(T, D, d, t);
+        List<Task> newTasks = FindObjectOfType<ProjectViewLogic>().projects[0].getProjectTasks();
+        newTasks.Add(newOutlier);
+        FindObjectOfType<ProjectViewLogic>().projects[0].setProjectTasks(newTasks);
         Destroy(FindObjectOfType<TodayManager>().getCurrentOutlier());
         FindObjectOfType<TodayManager>().saveOutlier(newOutlier);
     }

@@ -16,7 +16,7 @@ public class AchievementLogic : MonoBehaviour
     public TMP_Text playerName;
     public TMP_Text level;
     public UserData user;
-    private List<Project> achievementProjects = new List<Project>();
+    public List<Project> achievementProjects = new List<Project>();
     private List<Task> allCompletedTasks = new List<Task>();
     private List<GameObject> activeProjectButtons;
     private int selectedProjectIndex;
