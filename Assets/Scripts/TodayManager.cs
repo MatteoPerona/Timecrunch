@@ -36,6 +36,7 @@ public class TodayManager : MonoBehaviour
     public GameObject forwardArrow;
     private bool newDayProtocol = false;
     public GameObject newOutlierBtn;
+    public TMP_Text todayTasksNumText;
     
     
     void Start()
@@ -138,6 +139,8 @@ public class TodayManager : MonoBehaviour
         if(taskProjectIndices != null){
             taskProjectIndices.Clear();
         }
+        
+        todayTasksNumText.text = completableTasks.Count.ToString();
 
         updateButtons();
         updateTodayProgress();
@@ -264,7 +267,6 @@ public class TodayManager : MonoBehaviour
     }
 
     public void updateButtons(){
-        newOutlierBtn.transform.SetAsLastSibling();
 
         for(int x = 0; x < todayTasks.Count; x++){
             //Check if date is still a match
@@ -337,7 +339,6 @@ public class TodayManager : MonoBehaviour
         todayTasks.Add(t);
         totalTasksToday += 1;
         updateTodayProgress();
-        newOutlierBtn.transform.SetAsLastSibling();
     }
     public void removeCompletebleTask(GameObject cTask)
     {
@@ -347,7 +348,14 @@ public class TodayManager : MonoBehaviour
     }
     public void updateTodayProgress()
     {
-        progressBar.GetComponent<Image>().fillAmount = completedTasksToday/totalTasksToday;
+        if (completedTasksToday == 0)
+        {
+            progressBar.GetComponent<Image>().fillAmount = 0f;
+        }
+        else
+        {
+            progressBar.GetComponent<Image>().fillAmount = completedTasksToday/totalTasksToday;
+        }
     }
     public void addCompletedToday(Task t)
     {

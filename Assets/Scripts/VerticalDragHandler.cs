@@ -12,6 +12,8 @@ public class VerticalDragHandler : MonoBehaviour, IDragHandler, IBeginDragHandle
     private RectTransform rect;
     public float animTime;
     private int siblingIndex;
+    private float heldTime;
+    private bool startDrag;
 
     void Awake()
     {
@@ -26,6 +28,7 @@ public class VerticalDragHandler : MonoBehaviour, IDragHandler, IBeginDragHandle
     
     public void OnBeginDrag(PointerEventData eventData)
     {
+        heldTime = Time.time;
         if (content == null)
         {
             content = transform.parent.gameObject;
@@ -33,32 +36,39 @@ public class VerticalDragHandler : MonoBehaviour, IDragHandler, IBeginDragHandle
             Debug.Log("content was null");
         }
         Debug.Log("Current sibling index of this child: "+siblingIndex);
-
-        currentDragger = Instantiate(dragger, transform.position, transform.rotation);
-        currentDragger.transform.SetParent(content.transform.parent);
-        LeanTween.alpha(currentDragger.GetComponent<RectTransform>(), 1f, animTime);
-        GetComponent<RectTransform>().LeanAlpha(.05f, animTime);
+        startDrag = true;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        currentDragger.transform.position = eventData.position;
-        Button[] children = content.GetComponentsInChildren<Button>();
-        //Debug.Log(children.Length+" children");
+        if (.01f < Time.time-heldTime)
+        {
+            if (startDrag)
+            {
+                currentDragger = Instantiate(dragger, transform.position, transform.rotation);
+                currentDragger.transform.SetParent(content.transform.parent);
+                LeanTween.alpha(currentDragger.GetComponent<RectTransform>(), 1f, animTime);
+                GetComponent<RectTransform>().LeanAlpha(.05f, animTime);
+                startDrag = false;
+            }
+            currentDragger.transform.position = eventData.position;
+            Button[] children = content.GetComponentsInChildren<Button>();
+            //Debug.Log(children.Length+" children");
 
-        if (siblingIndex < children.Length-1 && children[siblingIndex+1].transform.position.y > eventData.position.y)//down
-        {
-            siblingIndex++;
-            transform.SetSiblingIndex(siblingIndex);
-            //children[siblingIndex-1].SetSiblingIndex(siblingIndex-1);
-            Debug.Log("sibling index added 1: "+siblingIndex);
-        }
-        else if (siblingIndex > 0 && children[siblingIndex-1].transform.position.y < eventData.position.y)//up
-        {
-            siblingIndex--;
-            transform.SetSiblingIndex(siblingIndex);
-            //children[siblingIndex+1].SetSiblingIndex(siblingIndex+1);
-            Debug.Log("sibling index subtracted 1: "+siblingIndex);
+            if (siblingIndex < children.Length-1 && children[siblingIndex+1].transform.position.y > eventData.position.y)//down
+            {
+                siblingIndex++;
+                transform.SetSiblingIndex(siblingIndex);
+                //children[siblingIndex-1].SetSiblingIndex(siblingIndex-1);
+                Debug.Log("sibling index added 1: "+siblingIndex);
+            }
+            else if (siblingIndex > 0 && children[siblingIndex-1].transform.position.y < eventData.position.y)//up
+            {
+                siblingIndex--;
+                transform.SetSiblingIndex(siblingIndex);
+                //children[siblingIndex+1].SetSiblingIndex(siblingIndex+1);
+                Debug.Log("sibling index subtracted 1: "+siblingIndex);
+            }
         }
     }
 
