@@ -5,6 +5,7 @@ using UnityEngine;
 public class TodayCanvasMethods : MonoBehaviour
 {
     private void OnDisable() {
+        
         FindObjectOfType<TodayManager>().resetDate();    
     } 
     // Start is called before the first frame update

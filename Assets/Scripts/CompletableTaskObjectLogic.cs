@@ -30,10 +30,12 @@ public class CompletableTaskObjectLogic : MonoBehaviour
                 if (t == task)
                 {
                     t.addDay();
+                    FindObjectOfType<TodayManager>().removeSavedTask(t);
+                    FindObjectOfType<TodayManager>().moveUpdate(t);
+                    break;
                 }
             }
-        }
-        FindObjectOfType<TodayManager>().updateButtons();
+        }        
     }
 
     public void back()
@@ -45,9 +47,11 @@ public class CompletableTaskObjectLogic : MonoBehaviour
                 if (t == task)
                 {
                     t.subtractDay();
+                    FindObjectOfType<TodayManager>().removeSavedTask(t);
+                    FindObjectOfType<TodayManager>().moveUpdate(t);
+                    break;
                 }
             }
         }
-        FindObjectOfType<TodayManager>().updateButtons();
     }
 }

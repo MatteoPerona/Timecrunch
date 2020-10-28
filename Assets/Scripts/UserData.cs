@@ -10,6 +10,7 @@ public class UserData
     private float exp;
     private float timeWorkedToday;
     private float timeWorked;
+    public float points;
     
     public UserData (string n)
     {
@@ -51,38 +52,7 @@ public class UserData
         return timeWorked;
     }
 
-    public void rewardTaskCompletion(Task t)
-    {
-        float reward = 100f;
-        reward += t.getTimeWorked();
-        exp += reward;
-
-        timeWorked += t.getTimeWorked();
-        timeWorkedToday += t.getTimeWorked();
-        checkLevelUp();
-    }
-
-    public void rewardProjectCompletion(Project p)
-    {
-        float reward = 100f;
-        reward += p.getTimeWorked();
-        exp += reward;
-
-        checkLevelUp();
-    }
     
-    public void checkLevelUp()
-    {
-        float limit = 3600f*level;
-        if (exp >= limit)
-        {
-            Debug.Log("limit hit: "+ limit);
-            exp -= limit;
-            level += 1f;
-        }
-        Debug.Log("level: " + level);
-        Debug.Log("exp: " + exp);
-    }
 
 
 }

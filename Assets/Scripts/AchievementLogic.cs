@@ -15,7 +15,6 @@ public class AchievementLogic : MonoBehaviour
     public Button projectBtn;
     public TMP_Text playerName;
     public TMP_Text level;
-    public UserData user;
     public List<Project> achievementProjects = new List<Project>();
     private List<Task> allCompletedTasks = new List<Task>();
     private List<GameObject> activeProjectButtons;
@@ -28,7 +27,7 @@ public class AchievementLogic : MonoBehaviour
     void Start()
     {
         oldInds = 0;
-        user = new UserData("Name Here");
+        
         calculateLevel();
     	if (activeProjectButtons == null)
     	{
@@ -88,7 +87,7 @@ public class AchievementLogic : MonoBehaviour
                 if (isNew)
                 {
                     allCompletedTasks.Add(t);
-                    user.rewardTaskCompletion(t);
+                    FindObjectOfType<user>().rewardTaskCompletion(t);
                     calculateLevel();
                 }
             }
@@ -99,13 +98,13 @@ public class AchievementLogic : MonoBehaviour
 
     public void calculateLevel()
     {
-        float limit = user.getLevel()*3600f;
-        experienceBar.GetComponent<Image>().fillAmount = user.getExp()/limit;
-        if (user.getTimeWorkedToday() > 0)
+        float limit = FindObjectOfType<user>().level*3600f;
+        experienceBar.GetComponent<Image>().fillAmount = FindObjectOfType<user>().exp/limit;
+        if (FindObjectOfType<user>().timeWorkedToday > 0)
         {
-            timeWorkedToday.text = user.getTimeWorkedToday().ToString();
+            timeWorkedToday.text = FindObjectOfType<user>().timeWorkedToday.ToString();
         }
-        level.text = "Lv. " + user.getLevel().ToString();
+        level.text = "Lv. " + FindObjectOfType<user>().level.ToString();
     }
 
     public void addProjectButton(Project project)
@@ -144,7 +143,7 @@ public class AchievementLogic : MonoBehaviour
 
     public void updateTimeWorkedToday()
     {
-        float time = user.getTimeWorkedToday();
+        float time = FindObjectOfType<user>().timeWorkedToday;
         string hours = Mathf.Floor((time % 216000) / 3600).ToString("00");
         string minutes = Mathf.Floor((time % 3600) / 60).ToString("00");
         string seconds = (time % 60).ToString("00");

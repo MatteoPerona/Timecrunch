@@ -29,6 +29,7 @@ public class TodayManager : MonoBehaviour
     private float completedTasksToday;
     public GameObject progressBar;
     private List<Task> completedToday = new List<Task>();
+    private List<Task> tasksTodaySaved = new List<Task>();
     public GameObject todayCanvas;
     private bool refreshed;
     public System.DateTime dateNow;
@@ -63,7 +64,6 @@ public class TodayManager : MonoBehaviour
     }
     public void today()
     {
-        
         // check if title and date match
         // if they don't it will set the new date and reset all initial data
         if (newDayProtocol)
@@ -78,7 +78,7 @@ public class TodayManager : MonoBehaviour
                 Destroy(cTask);
             }
             completableTasks.Clear();
-            FindObjectOfType<AchievementLogic>().user.setTimeWorkedToday(0f);
+            FindObjectOfType<user>().timeWorkedToday = 0f;
             newDayProtocol = false;
         }
         else if (title.text != date)
@@ -123,6 +123,11 @@ public class TodayManager : MonoBehaviour
                         newTodayTasks.Add(t);
                         taskProjectIndices.Add(projects.IndexOf(p)); 
                     }
+                    else if(date == "Past Due" && checkPastDue(t))
+                    {
+                        newTodayTasks.Add(t);
+                        taskProjectIndices.Add(projects.IndexOf(p)); 
+                    }
                 }
             }      
         }
@@ -131,7 +136,6 @@ public class TodayManager : MonoBehaviour
         }
         foreach(Task t in newTodayTasks){
             todayTasks.Add(t);
-            totalTasksToday += 1f;
         }
         if(todayTasks != null){
             newTodayTasks.Clear();
@@ -139,8 +143,25 @@ public class TodayManager : MonoBehaviour
         if(taskProjectIndices != null){
             taskProjectIndices.Clear();
         }
-        
-        todayTasksNumText.text = completableTasks.Count.ToString();
+        if (date == dateToday)
+        {
+            foreach (Task t in todayTasks)
+            {
+                bool exists = false;
+                foreach (Task st in tasksTodaySaved)
+                {
+                    if (st == t)
+                    {
+                        exists = true;
+                    }
+                }
+                if (!exists)
+                {
+                    tasksTodaySaved.Add(t);
+                    totalTasksToday += 1f;
+                }
+            }
+        }
 
         updateButtons();
         updateTodayProgress();
@@ -217,18 +238,15 @@ public class TodayManager : MonoBehaviour
 
     public void openCrunchScreen()
     {
-        //Debug.Log(currentButton.GetComponentInChildren<TMP_Text>().text);
         if(isCrunching==false)
         {
             isCrunching = true;
             int buttonScrollIndex = 0;
             Button[] buttons = completableTaskScroll.GetComponentsInChildren<Button>();
-            //Debug.Log("buttons: "+buttons.Length);
             for (int x = 0; x < buttons.Length; x++)
             {
                 try
                 {
-                    //Debug.Log("button title: "+buttons[x].GetComponentInChildren<TMP_Text>().text);
                     if (buttons[x].GetComponentInChildren<TMP_Text>().text == currentButton.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text)
                     {
                         buttonScrollIndex = x;
@@ -243,7 +261,6 @@ public class TodayManager : MonoBehaviour
             }
             foreach(GameObject cTask in completableTasks)
             {
-                //Debug.Log(cTask.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text+" "+buttons[buttonScrollIndex].GetComponentInChildren<TMP_Text>().text);
                 if(cTask.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text == buttons[buttonScrollIndex].GetComponentInChildren<TMP_Text>().text)
                 {
                     cTask.SetActive(false);
@@ -283,11 +300,12 @@ public class TodayManager : MonoBehaviour
                 year = "0"+year;
             }
             string taskDate = day+"/"+month+"/"+year;
-            if(taskDate != date){
+            if(taskDate != date && !checkPastDue(todayTasks[x])){
                 Destroy(completableTasks[x]);
                 completableTasks.Remove(completableTasks[x]);
                 todayTasks.Remove(todayTasks[x]);
                 totalTasksToday -= 1;
+                Debug.Log("totalTasksToday-1: "+totalTasksToday);
             }
 
             //Resize button if necessary
@@ -335,38 +353,79 @@ public class TodayManager : MonoBehaviour
     }
     public void saveOutlier(Task t)
     {
-        addCompletableTask(t);
-        todayTasks.Add(t);
-        totalTasksToday += 1;
-        updateTodayProgress();
+        //addCompletableTask(t);
+        //todayTasks.Add(t);
+        //totalTasksToday += 1;
+        //updateTodayProgress();
+        today();
+    }
+    public void moveUpdate(Task t)
+    {
+        if (date == dateToday)
+        {
+            totalTasksToday -= 1;
+        }
+        today();
     }
     public void removeCompletebleTask(GameObject cTask)
     {
         completableTasks.Remove(cTask);
-        completedTasksToday += 1;
+        if (dateToday == date){
+            completedTasksToday += 1;
+        }
         updateTodayProgress();
     }
     public void updateTodayProgress()
     {
-        if (completedTasksToday == 0)
+        if (completedTasksToday == 0 && totalTasksToday == 0)
         {
             progressBar.GetComponent<Image>().fillAmount = 0f;
+        }
+        else if (completedTasksToday > 0 && totalTasksToday == 0)
+        {
+            progressBar.GetComponent<Image>().fillAmount = 1f;
         }
         else
         {
             progressBar.GetComponent<Image>().fillAmount = completedTasksToday/totalTasksToday;
         }
+        todayTasksNumText.text = (totalTasksToday-completedToday.Count).ToString();
+        Debug.Log("totalTasksToday"+totalTasksToday);
+        Debug.Log("completedToday.Count"+completedToday.Count);
+        Debug.Log("completedTasksToday"+completedTasksToday);
     }
     public void addCompletedToday(Task t)
     {
-        completedToday.Add(t);
+        if (date == dateToday)
+        {
+            completedToday.Add(t);
+        }
     }
     public void removeCompletedToday(Task t)
     {
-        completedToday.Remove(t);
-        completedTasksToday -= 1;
-        totalTasksToday -= 1;
+        
+        if (dateToday == date){
+            completedToday.Remove(t);
+            completedTasksToday -= 1;
+            Debug.Log("completedTasksToday-1: "+completedTasksToday);
+            totalTasksToday -= 1;
+            Debug.Log("totalTasksToday-1: "+totalTasksToday);
+            removeSavedTask(t);
+        }   
     }
+
+    public void removeSavedTask(Task t)
+    {
+        foreach (Task st in tasksTodaySaved)
+            {
+                if (st == t)
+                {
+                    tasksTodaySaved.Remove(st);
+                    break;
+                }
+            }
+    }
+
     public List<Task> getCompletedToday()
     {
         return completedToday;
@@ -375,7 +434,11 @@ public class TodayManager : MonoBehaviour
     {
         int index = todayTasks.IndexOf(t);
         todayTasks.Remove(t);
-        totalTasksToday -= 1;
+        if(date == dateToday)
+        {
+            totalTasksToday -= 1;
+            Debug.Log("totalTasksToday-1: "+totalTasksToday);
+        }
         Destroy(completableTasks[index]);
         completableTasks.Remove(completableTasks[index]);
         updateTodayProgress();
@@ -385,6 +448,7 @@ public class TodayManager : MonoBehaviour
     {
         if (date == "Past Due")
         {
+            backArrow.SetActive(true);
             resetDate();
             today();
         }
@@ -410,20 +474,41 @@ public class TodayManager : MonoBehaviour
             date = dateNow.ToString("dd/MM/yy");
             today();
         }
-        if (backArrow.activeSelf == false)
-        {
-            backArrow.SetActive(true);
-        }
     }
 
     public void resetDate()
     {
         dateNow = System.DateTime.UtcNow.ToLocalTime();
         date = dateNow.ToString("dd/MM/yy");
+        if (backArrow.activeSelf == false)
+        {
+            backArrow.SetActive(true);
+        }
         if (date != dateToday)
         {
             newDayProtocol = true;
             dateToday = date;
         }
+    }
+
+    public bool checkPastDue(Task t){
+        if (t.getDate()[2] < dateNow.Year-2000)
+        {
+            return true;
+        }
+        else if (t.getDate()[2] == dateNow.Year-2000 && t.getDate()[1] < dateNow.Month)
+        {
+            return true;
+        }
+        else if (t.getDate()[2] == dateNow.Year-2000 && t.getDate()[1] == dateNow.Month && t.getDate()[0] < dateNow.Day)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public void setNewDateBool(bool b)
+    {
+        newDayProtocol = b;
     }
 }
